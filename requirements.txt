@@ -1,0 +1,24 @@
+============================================
+
+Unauthorized Mobile Device Detection Project
+
+Requirements File
+
+============================================
+
+Core numerical and data processing libraries
+
+numpy==1.26.4
+pandas==2.2.2
+
+Machine Learning
+
+scikit-learn==1.4.2
+
+Serial communication (ESP32 → PC)
+
+pyserial==3.5
+
+Visualization (optional but recommended)
+
+matplotlib==3.8.4

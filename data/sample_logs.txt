@@ -1,0 +1,195 @@
+================================================================================
+   UNAUTHORIZED MOBILE DEVICE DETECTION SYSTEM
+   Wi-Fi + Bluetooth Activity Analysis using ESP32 + ML
+   Sample Log File -- For Demonstration & Testing
+================================================================================
+
+SYSTEM INFO
+-----------
+  ESP32 Port     : COM3
+  Baud Rate      : 115200
+  Model          : model.pkl (Random Forest)
+  Window Size    : 20 samples
+  Authorized MACs: AA:BB:CC:DD:EE:FF
+
+================================================================================
+[PHASE 1] generate_dataset.py -- Dataset Generation
+================================================================================
+
+Running: python generate_dataset.py
+
+  Generating Authorized device samples  ... 300 samples
+  Generating Suspicious device samples  ... 300 samples
+  Generating Unknown device samples     ... 300 samples
+
+[OK] Dataset created: 900 samples
+
+Class Distribution:
+  Authorized    300
+  Suspicious    300
+  Unknown       300
+
+Preview (first 10 rows):
+  rssi_mean    rssi_std  packet_rate     duration  known  label
+  -52.341842   2.341231     1.823451  18234.1234      1  Authorized
+  -74.982341  12.341200     6.234512   4532.3412      0  Suspicious
+  -81.234512   6.234100     0.823451   2341.2341      0  Unknown
+  -48.123400   1.823400     2.123400  25341.2341      1  Authorized
+  -63.234512   8.234512     7.341200   3234.5123      0  Suspicious
+  -77.512341   4.512341     0.512341   1823.4512      0  Unknown
+  -55.341200   3.123400     1.512341  22341.5123      1  Authorized
+  -69.823451  15.823451     9.123400   5123.4123      0  Suspicious
+  -85.123400   7.341200     0.341200   3512.3412      0  Unknown
+  -44.512341   2.512341     0.823451  28234.1234      1  Authorized
+
+Saved to: training_data.csv
+
+================================================================================
+[PHASE 2] train_model.py -- Model Training
+================================================================================
+
+Running: python train_model.py
+
+[OK] Loaded 900 samples
+
+Label distribution:
+  Authorized    300
+  Suspicious    300
+  Unknown       300
+
+Training Random Forest Classifier...
+  n_estimators : 100
+  test_size    : 0.2
+  random_state : 42
+
+  Train samples : 720
+  Test samples  : 180
+
+Model Performance:
+
+              precision    recall  f1-score   support
+  Authorized       0.97      0.98      0.97        61
+  Suspicious       0.96      0.95      0.96        58
+  Unknown          0.94      0.94      0.94        61
+
+    accuracy                           0.96       180
+   macro avg       0.96      0.96      0.96       180
+weighted avg       0.96      0.96      0.96       180
+
+[OK] Model saved as 'model.pkl'
+
+================================================================================
+[PHASE 3] collect_data.py -- Real ESP32 Data Collection
+================================================================================
+
+Running: python collect_data.py
+
+Listening for ESP32 data... Press Ctrl+C to stop
+
+  [RAW ESP32 INPUT]
+  WIFI,AA:BB:CC:DD:EE:FF,-52,10234
+  BLE,1a:2b:3c:4d:5e:6f,-74,12340
+  WIFI,7F:3A:12:BC:DE:F0,-63,14502
+  WIFI,AA:BB:CC:DD:EE:FF,-50,16234
+  BLE,9E:8D:7C:6B:5A:4F,-88,18340
+  WIFI,3C:2A:F1:00:11:22,-81,20120
+  BLE,1a:2b:3c:4d:5e:6f,-71,22341
+  WIFI,F0:1A:2B:3C:4D:5E,-58,24230
+  WIFI,AA:BB:CC:DD:EE:FF,-55,26120
+  BLE,7F:3A:12:BC:DE:F0,-67,28234
+
+  [SAVED TO training_data.csv]
+  Saved --> AA:BB:CC:DD:EE:FF    | Authorized
+  Saved --> 1a:2b:3c:4d:5e:6f   | Suspicious
+  Saved --> 7F:3A:12:BC:DE:F0   | Suspicious
+  Saved --> AA:BB:CC:DD:EE:FF    | Authorized
+  Saved --> 9E:8D:7C:6B:5A:4F   | Unknown
+  Saved --> 3C:2A:F1:00:11:22   | Unknown
+  Saved --> 1a:2b:3c:4d:5e:6f   | Suspicious
+  Saved --> F0:1A:2B:3C:4D:5E   | Suspicious
+  Saved --> AA:BB:CC:DD:EE:FF    | Authorized
+  Saved --> 7F:3A:12:BC:DE:F0   | Suspicious
+
+[OK] Data collection stopped. Total saved: 10 samples
+
+================================================================================
+[PHASE 4] detect.py -- Real-Time Detection
+================================================================================
+
+Running: python detect.py
+
+[OK] Model loaded successfully
+
+Real-time detection started...
+
+  TIME       STATUS        MAC                  RSSI     TYPE
+  --------   -----------   ------------------   ------   ----
+  10:42:31   [AUTHORIZED]  AA:BB:CC:DD:EE:FF   -52 dBm  WIFI
+  10:42:33   [ALERT]       7F:3A:12:BC:DE:F0   -61 dBm  WIFI
+  10:42:35   [UNKNOWN]     3C:2A:F1:00:11:22   -84 dBm  WIFI
+  10:42:37   [ALERT]       1a:2b:3c:4d:5e:6f   -73 dBm  BLE
+  10:42:39   [AUTHORIZED]  AA:BB:CC:DD:EE:FF   -50 dBm  WIFI
+  10:42:41   [ALERT]       F0:1A:2B:3C:4D:5E   -58 dBm  WIFI
+  10:42:43   [UNKNOWN]     9E:8D:7C:6B:5A:4F   -88 dBm  BLE
+  10:42:45   [AUTHORIZED]  AA:BB:CC:DD:EE:FF   -55 dBm  WIFI
+  10:42:47   [ALERT]       7F:3A:12:BC:DE:F0   -63 dBm  WIFI
+  10:42:49   [UNKNOWN]     B2:4F:A1:33:CD:90   -90 dBm  BLE
+  10:42:51   [ALERT]       1a:2b:3c:4d:5e:6f   -69 dBm  BLE
+  10:42:53   [AUTHORIZED]  AA:BB:CC:DD:EE:FF   -48 dBm  WIFI
+  10:42:55   [ALERT]       7F:3A:12:BC:DE:F0   -60 dBm  WIFI
+  10:42:57   [UNKNOWN]     3C:2A:F1:00:11:22   -82 dBm  WIFI
+  10:42:59   [ALERT]       F0:1A:2B:3C:4D:5E   -55 dBm  BLE
+  10:43:01   [AUTHORIZED]  AA:BB:CC:DD:EE:FF   -53 dBm  WIFI
+  10:43:03   [ALERT]       1a:2b:3c:4d:5e:6f   -72 dBm  BLE
+  10:43:05   [UNKNOWN]     9E:8D:7C:6B:5A:4F   -86 dBm  BLE
+  10:43:07   [ALERT]       7F:3A:12:BC:DE:F0   -65 dBm  WIFI
+  10:43:09   [AUTHORIZED]  AA:BB:CC:DD:EE:FF   -51 dBm  WIFI
+
+Detection stopped.
+
+================================================================================
+DETECTION SUMMARY
+================================================================================
+
+  Total devices detected  : 6
+  Authorized devices      : 1  (AA:BB:CC:DD:EE:FF)
+  Suspicious devices      : 3  (7F:3A:12:BC:DE:F0, 1a:2b:3c:4d:5e:6f,
+                                 F0:1A:2B:3C:4D:5E)
+  Unknown devices         : 2  (3C:2A:F1:00:11:22, 9E:8D:7C:6B:5A:4F)
+
+  Total alerts raised     : 8
+  Detection window        : 10:42:31 --> 10:43:09 (38 seconds)
+
+================================================================================
+LEGEND
+================================================================================
+
+  [AUTHORIZED] -- Known MAC, stable signal, normal packet rate
+  [ALERT]      -- Unknown MAC, high burst activity, strong RSSI
+  [UNKNOWN]    -- Unrecognized MAC, brief/weak presence
+
+  RSSI Range Guide:
+    -40 to -60 dBm  -->  Strong signal  (device very close)
+    -60 to -75 dBm  -->  Medium signal  (device nearby)
+    -75 to -90 dBm  -->  Weak signal    (device far or through walls)
+    Below -90 dBm   -->  Very weak      (edge of detection range)
+
+================================================================================
+PROJECT FILES
+================================================================================
+
+  esp32_scanner.ino       --> ESP32 firmware (Wi-Fi + BLE scanning)
+  generate_dataset.py     --> Synthetic dataset generation
+  train_model.py          --> ML model training (Random Forest)
+  collect_data.py         --> Real ESP32 data collection
+  detect.py               --> Real-time detection engine
+  training_data.csv       --> Dataset (generated or collected)
+  model.pkl               --> Trained ML model
+  sample_logs.txt         --> This file
+
+================================================================================
+END OF LOG
+================================================================================
+
+
+Copy everything inside the code block, save as `sample_logs.txt`. Want the README.md next?
