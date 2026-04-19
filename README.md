@@ -128,37 +128,6 @@ Concepts
 
 ---
 
-Project Structure
-
-unauthorized-phone-detection/
-│
-├── firmware/
-│   └── esp32_wifi_ble_scan.ino
-│
-├── ml_model/
-│   ├── train_model.py
-│   ├── realtime_detection.py
-│   └── training_data.csv
-│
-├── data/
-│   └── sample_logs.csv
-│
-├── diagrams/
-│   ├── block_diagram.png
-│   └── workflow.png
-│
-├── results/
-│   ├── screenshots/
-│   └── outputs/
-│
-├── docs/
-│   ├── report.pdf
-│   └── presentation.pptx
-│
-├── requirements.txt
-└── README.md
-
----
 
 Getting Started
 
